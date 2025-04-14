@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizable Pixel Music Player</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        *{
+          user-select: none;
+        }
+        :root {
+            /* Primary color scheme - can be easily changed */
+            --primary-color: #ff69b4;       /* Hot pink */
+            --primary-dark: #ff1493;        /* Deep pink */
+            --primary-light: #ffcce6;       /* Light pink */
+            --secondary-color: #fff;        /* White */
+            --background-color: #000;       /* Black */
+            --overlay-color-1: rgba(255, 182, 193, 0.1); /* Light pink transparent */
+            --overlay-color-2: rgba(255, 105, 180, 0.1); /* Hot pink transparent */
+            --title-bg-color: rgba(255, 105, 180, 0.7);  /* Semi-transparent hot pink */
+            --shadow-color: rgba(255, 105, 180, 0.7);    /* Hot pink shadow */
+            --image-filter: hue-rotate(320deg) saturate(1.5) brightness(1.1);
+        }
+        
+        /* Class to switch to blue theme */
+        .theme-blue {
+            --primary-color: #1e90ff;       /* Dodger blue */
+            --primary-dark: #0000cd;        /* Medium blue */
+            --primary-light: #add8e6;       /* Light blue */
+            --overlay-color-1: rgba(173, 216, 230, 0.1); /* Light blue transparent */
+            --overlay-color-2: rgba(30, 144, 255, 0.1);  /* Dodger blue transparent */
+            --title-bg-color: rgba(30, 144, 255, 0.7);   /* Semi-transparent blue */
+            --shadow-color: rgba(30, 144, 255, 0.7);     /* Blue shadow */
+            --image-filter: hue-rotate(240deg) saturate(1.5) brightness(1.1);
+        }
+        
+        /* Class to switch to purple theme */
+        .theme-purple {
+            --primary-color: #9370db;       /* Medium purple */
+            --primary-dark: #4b0082;        /* Indigo */
+            --primary-light: #d8bfd8;       /* Thistle */
+            --overlay-color-1: rgba(216, 191, 216, 0.1); /* Thistle transparent */
+            --overlay-color-2: rgba(147, 112, 219, 0.1); /* Medium purple transparent */
+            --title-bg-color: rgba(147, 112, 219, 0.7);  /* Semi-transparent purple */
+            --shadow-color: rgba(147, 112, 219, 0.7);    /* Purple shadow */
+            --image-filter: hue-rotate(280deg) saturate(1.5) brightness(1.1);
+        }
+        
+        /* Class to switch to green theme */
+        .theme-green {
+            --primary-color: #32cd32;       /* Lime green */
+            --primary-dark: #006400;        /* Dark green */
+            --primary-light: #90ee90;       /* Light green */
+            --overlay-color-1: rgba(144, 238, 144, 0.1); /* Light green transparent */
+            --overlay-color-2: rgba(50, 205, 50, 0.1);   /* Lime green transparent */
+            --title-bg-color: rgba(50, 205, 50, 0.7);    /* Semi-transparent green */
+            --shadow-color: rgba(50, 205, 50, 0.7);      /* Green shadow */
+            --image-filter: hue-rotate(120deg) saturate(1.5) brightness(1.1);
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'VT323', monospace;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            image-rendering: pixelated;
+        }
+        
+        .player-container {
+            width: 684px;
+            height: 684px;
+            position: relative;
+            background-color: var(--primary-light);
+            box-shadow: 0 0 20px var(--shadow-color);
+            border: 8px solid var(--primary-color);
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        
+        .player-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: var(--image-filter);
+            image-rendering: pixelated;
+            opacity: 0.85;
+        }
+        
+        .player-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--overlay-color-1),
+                var(--overlay-color-1) 10px,
+                var(--overlay-color-2) 10px,
+                var(--overlay-color-2) 20px
+            );
+            pointer-events: none;
+        }
+        
+        .pixel-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: var(--primary-color);
+            opacity: 0.8;
+            animation: float 6s infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        .controls-container {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .title {
+            color: var(--secondary-color);
+            font-size: 36px;
+            text-shadow: 4px 4px 0 var(--primary-dark);
+            margin-bottom: 30px;
+            background-color: var(--title-bg-color);
+            padding: 12px;
+            border: 4px dashed var(--secondary-color);
+            letter-spacing: 2px;
+            border-radius: 12px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .pixel-button {
+            width: 120px;
+            color: var(--secondary-color);
+            font-size: 22px;
+            font-family: 'VT323', monospace;
+            background-color: var(--primary-color);
+            border: 4px solid var(--secondary-color);
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 0 var(--primary-dark);
+        }
+        
+        .pixel-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 0 var(--primary-color);
+        }
+        
+        .pixel-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+        
+        /* Pixelated decorations */
+        .pixel-decoration {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: var(--secondary-color);
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+        .input-decoration{
+          all:unset;
+          border: 2px solid var(--primary-color);
+          width: 10%;
+          font-family: 'VT323', monospace;
+          position: absolute;
+          background-color: var(--secondary-color);
+          border-radius:  5px;
+        }
+        .refresh-button {
+            background: none;
+	          color: inherit;
+	          border: none;
+	          padding: 0;
+	          font: inherit;
+	          cursor: pointer;
+	          outline: inherit;
+            position: absolute;
+            background-color: var(--secondary-color);
+            border-radius:  5px;
+        }
+        .star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        
+        .top-left {
+            top: 20px;
+            left: 20px;
+        }
+        
+        .top-right {
+            top: 20px;
+            right: 20px;
+        }
+        
+        .bottom-left {
+            bottom: 20px;
+            left: 20px;
+        }
+        
+        .bottom-right {
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        /* Animation for the play button */
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        /* Kawaii cloud decoration */
+        .kawaii-cloud {
+            position: absolute;
+            top: 40px;
+            width: 100%;
+            text-align: center;
+            font-size: 30px;
+            color: var(--secondary-color);
+            text-shadow: 2px 2px 0 var(--primary-color);
+        }
+        
+        /* Music note animations */
+        .notes-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .music-note {
+            position: absolute;
+            color: var(--secondary-color);
+            font-size: 32px;
+            animation: float-note 8s linear infinite;
+            opacity: 0.7;
+            text-shadow: 2px 2px 0 var(--primary-color);
+        }
+        
+        @keyframes float-note {
+            0% { 
+                transform: translateY(700px) rotate(0deg); 
+                opacity: 0.7;
+            }
+            100% { 
+                transform: translateY(-50px) rotate(20deg); 
+                opacity: 0;
+            }
+        }
+        
+        /* Theme switcher controls */
+        .theme-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .theme-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid var(--secondary-color);
+            transition: transform 0.3s;
+        }
+        
+        .theme-button:hover {
+            transform: scale(1.2);
+        }
+        
+        .pink-theme {
+            background-color: #ff69b4;
+        }
+        
+        .blue-theme {
+            background-color: #1e90ff;
+        }
+        
+        .purple-theme {
+            background-color: #9370db;
+        }
+        
+        .green-theme {
+            background-color: #32cd32;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="player-container" data-tauri-drag-region id="player">
+        <img src="/greycore.jpeg" alt="Album Art" class="player-bg" id="image">
+        <div class="player-overlay"></div>
+        
+        <!-- Theme switcher buttons -->
+        <div class="theme-controls">
+            <div class="theme-button pink-theme"></div>
+            <div class="theme-button blue-theme" ></div>
+            <div class="theme-button purple-theme" ></div>
+            <div class="theme-button green-theme"></div>
+        </div>
+        
+        <!-- Kawaii decorations -->
+        <div class="notes-container">
+            <div class="music-note" style="left: 10%; animation-duration: 7s;">♪</div>
+            <div class="music-note" style="left: 20%; animation-duration: 10s; animation-delay: 2s;">♫</div>
+            <div class="music-note" style="left: 35%; animation-duration: 8s; animation-delay: 1s;">♩</div>
+            <div class="music-note" style="left: 60%; animation-duration: 12s; animation-delay: 0.5s;">♪</div>
+            <div class="music-note" style="left: 75%; animation-duration: 9s; animation-delay: 3s;">♫</div>
+            <div class="music-note" style="left: 90%; animation-duration: 11s; animation-delay: 1.5s;">♩</div>
+        </div>
+        
+        <div class="pixel-hearts">
+            <div class="heart" style="top: 15%; left: 20%;">♥</div>
+            <div class="heart" style="top: 25%; left: 85%; animation-delay: 1s;">♥</div>
+            <div class="heart" style="top: 40%; left: 10%; animation-delay: 2s;">♥</div>
+            <div class="heart" style="top: 60%; left: 80%; animation-delay: 0.5s;">♥</div>
+            <div class="heart" style="top: 75%; left: 15%; animation-delay: 1.5s;">♥</div>
+        </div>
+        
+        <div class="kawaii-cloud">✿ ✿ ✿</div>
+        
+        <!-- Pixel star decorations -->
+        <input class="input-decoration top-left" type="text"></input>
+        <div class="pixel-decoration star top-right"></div>
+        <div class="pixel-decoration star bottom-left"></div>
+        <button class="refresh-button bottom-right">Refresh</button>
+        
+        <div class="controls-container">
+            <h1 class="title" id="title">✿ SONG OF THE DAY ✿</h1>
+            <div class="button-container">
+                <button id="prev" class="pixel-button">PREV</button>
+                <button id="play" class="pixel-button bounce">PLAY</button>
+                <button id="next" class="pixel-button">NEXT</button>
+            </div>
+        </div>
+    </div>
+<script src="./main.js"></script>
+
+</body>
+</html>
