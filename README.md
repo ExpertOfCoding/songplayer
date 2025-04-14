@@ -1,7 +1,13 @@
-# Tauri + Vanilla
+You need to create this folder first : 
+C:/cutyplay/
+- songs
+- folder.txt
+these are must have !!
+[Ekran görüntüsü 2025-04-14 044559](https://github.com/user-attachments/assets/19fd0d91-1c68-4619-a74b-052028196fe6)
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
+songs2 is not essential
 
-## Recommended IDE Setup
+there is a images folder under src
+you can add images as much as you wish
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+i haven't took a build yet so this is only for 'cargo tauri dev' only!
